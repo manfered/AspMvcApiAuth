@@ -1,0 +1,101 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <meta charset="utf-8" />
+</head>
+<body>
+
+    <h3>Cors/Auth Request</h3>
+
+    <form id="userdata">
+        <input type="text" id="Email" name="Email" placeholder="Email" />
+        <input type="password" id="Password" name="Password" placeholder="Password" />
+        <input type="password" id="ConfirmPassword" name="ConfirmPassword" placeholder="Password" />
+        <input type="submit" id="register" value="register" />
+        <br />
+        <br />
+        <input type="text" id="userName" name="userName" placeholder="userName" />
+        <input type="submit" id="login" value="login" />
+    </form>
+
+
+
+    <button id="getCategories">Get Categories</button>
+
+    <pre id="output">
+    </pre>
+    <script src="Scripts/jquery-1.10.2.js"></script>
+    <script>
+
+        $(function () {
+
+            var getCategories = function () {
+
+
+                var url = "http://localhost:54775/api/categories";
+                $.ajax(url, {
+                    type: "GET",
+                    headers: getHeaders()
+                }).always(showResponse);
+
+                //$.get(url).always(showResponse);
+
+                return false;
+            };
+
+            var getHeaders = function () {
+                if (accessToken) {
+                    return { "Authorization": "Bearer " + accessToken };
+                }
+            };
+
+            var showResponse = function (object) {
+
+                $("#output").text(JSON.stringify(object, null, 4));
+
+            };
+
+            var register = function () {
+                var url = "/api/account/register";
+                var data = $("#userdata").serialize();
+                
+
+                $.post(url, data).always(showResponse);
+
+
+
+
+
+
+
+                return false;
+            };
+
+            var saveAccessToken = function (data) {
+                accessToken = data.access_token;
+            };
+
+            var login = function () {
+                var url = "/Token";
+                var data = $("#userdata").serialize();
+                data = data + "&grant_type=password";
+                $.post(url, data)
+                 .success(saveAccessToken)
+                 .always(showResponse);
+
+                return false;
+            };
+
+            var accessToken = "";
+
+            $("#login").click(login);
+            $("#register").click(register);
+            $("#getCategories").click(getCategories);
+
+        });
+
+
+    </script>
+</body>
+</html>
